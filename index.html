@@ -1,7 +1,8 @@
 <!DOCTYPE html>
 <html lang="vi"><head><meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
-<title>Ball vs Ball</title>
+<title>Ball vs Ball - Update 1</title>
+<link rel="icon" type="image/png" href="https://i.ibb.co/zWqTqnyv/image.png"><link rel="apple-touch-icon" href="https://i.ibb.co/zWqTqnyv/image.png">
 <style>
 :root{--bg:#4A90E2;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
 @media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#2c5a96}}
@@ -30,6 +31,13 @@ canvas{display:block;width:100%;height:100%}
 .ov .cp button,.ov .rs{padding:8px 10px;border:3px solid #000;background:#fff;color:#000;font:inherit;cursor:pointer}
 .ov .x{float:right;border:0;background:none;color:#000;font-size:26px;line-height:1;cursor:pointer}
 .ov .pr{display:flex;gap:12px;align-items:center;margin-bottom:8px}.ov .pr img{width:72px;height:72px;border:3px solid #000;object-fit:cover}.ov .nm{font-size:18px;font-weight:800}.ov .row{display:flex;gap:6px}.ov .row input{flex:1;min-width:0}.ov .row button,.ov .rw button{padding:8px 10px;border:3px solid #000;background:#fff;color:#000;font:inherit;cursor:pointer}.ov .rw{display:flex;align-items:center;justify-content:space-between;gap:6px;margin-top:6px}.ov h3{margin:12px 0 4px;font-size:15px}.ov .rs{margin-top:8px}.ov select{width:100%;padding:10px;font:inherit;border:3px solid #000;background:#fff;color:#000}#acCo{cursor:pointer}
+.tabs{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:8px}.tabs button{min-height:44px;padding:0 12px;font:800 13px/1 inherit;border:3px solid #000;background:#fff;color:#000;cursor:pointer}.tabs button.pri{background:#000;color:#fff}.tp{display:none}.tp.on{display:block}.tp h3{margin:12px 0 6px}.tp input,.tp select{width:100%;padding:10px;font:inherit;border:3px solid #000;margin-bottom:4px;box-sizing:border-box}
+#dock{position:fixed;left:8px;bottom:8px;display:none;gap:8px;z-index:30;flex-wrap:wrap}#dock button{min-height:48px;padding:0 14px;font:800 14px/1 inherit;border:3px solid #000;background:#fff;color:#000;cursor:pointer}#dock .bd{position:relative}.bdg{position:absolute;top:-9px;right:-9px;background:#E53935;color:#fff;border-radius:12px;padding:2px 7px;font-size:12px}
+#adx{position:fixed;left:50%;transform:translateX(-50%);bottom:6px;display:none;flex-wrap:wrap;gap:5px;z-index:30;max-width:98vw;justify-content:center}#adx button{min-height:40px;padding:0 9px;font:800 12px/1 inherit;border:3px solid #000;background:#fff;color:#000;cursor:pointer}#adx button.on{background:#FFD54A}
+#bc{position:fixed;top:0;left:0;right:0;background:#C62828;color:#fff;text-align:center;font-weight:800;padding:12px;z-index:60;display:none;font-size:16px}
+#js{position:fixed;inset:0;background:#000;z-index:99;display:none;align-items:center;justify-content:center}#js canvas{width:min(100vw,100vh);height:min(100vw,100vh)}#js.sh canvas{animation:jsk .08s infinite}@keyframes jsk{0%{transform:translate(-8px,6px) scale(1.04)}50%{transform:translate(9px,-7px) scale(1.08)}100%{transform:translate(-6px,-8px) scale(1.04)}}
+.gi{display:flex;justify-content:space-between;align-items:center;gap:8px;border:3px solid #000;padding:8px;margin:6px 0;font-weight:700}.gi button{min-height:44px}.shk{animation:jsk .1s 6}
+@media (prefers-reduced-motion:reduce){#js.sh canvas,.shk{animation:none}}
 </style>
 <div id="au" class="ov" role="dialog" aria-modal="true" aria-label="Tài khoản online"><div class="bx"><button class="x" id="auX" aria-label="Đóng">×</button><h2>ONLINE BÓNG</h2>
 <div class="tb"><button data-t="in" class="on">ĐĂNG NHẬP</button><button data-t="up">ĐĂNG KÝ</button><button data-t="gu">KHÁCH</button></div>
@@ -39,15 +47,30 @@ canvas{display:block;width:100%;height:100%}
 <div id="auP2w"><label for="auP2">Xác nhận mật khẩu</label><input id="auP2" type="password" autocomplete="new-password"></div>
 <div id="auCw"><label for="auC">Mã captcha</label><div class="cp"><canvas id="auCv" width="130" height="44"></canvas><button type="button" id="auR">Đổi mã</button></div><input id="auC" maxlength="5" autocomplete="off" autocapitalize="characters"></div>
 <div class="msg" id="auM" role="alert"></div><button class="go" id="auG">ĐĂNG NHẬP</button><button class="rs" id="auS" hidden>Gửi lại email xác minh</button></div></div>
-<div id="ad" class="ov" role="dialog" aria-modal="true" aria-label="Quản trị"><div class="bx"><button class="x" id="adX" aria-label="Đóng">×</button><h2>ADMIN</h2>
-<label for="adQ">ID người dùng hoặc UID</label><div class="row"><input id="adQ" maxlength="40" autocomplete="off"><button id="adF">Tìm</button></div>
+<div id="ad" class="ov" role="dialog" aria-modal="true" aria-label="Quản trị"><div class="bx" style="max-width:960px;width:96vw"><button class="x" id="adX" aria-label="Đóng">×</button><h2>BẢNG ADMIN</h2>
+<div class="tabs" id="adT"><button data-t="adU" class="pri">NGƯỜI DÙNG</button><button data-t="adG">QUÀ & THÔNG BÁO</button><button data-t="adS">KHÓA HỆ THỐNG</button><button data-t="adMt">TRẬN ĐẤU</button></div>
+<div id="adU" class="tp on"><label for="adQ">ID người dùng hoặc UID</label><div class="row"><input id="adQ" maxlength="40" autocomplete="off"><button id="adF">Tìm</button></div>
 <div class="row" style="margin-top:6px"><button id="adMe">Chính tôi</button><button id="adLs">Danh sách</button></div>
-<div id="adI" style="white-space:pre-line;margin:8px 0;font-size:13px"></div>
-<h3>Xu</h3><div class="row"><input id="adC" type="number" placeholder="Số xu (âm = trừ)" aria-label="Số xu"><button id="adCB">Tặng xu</button></div>
+<div id="adI" style="white-space:pre-line;margin:8px 0;font-size:14px;font-weight:700"></div>
+<h3>Xu (nhập số tùy ý, âm = trừ)</h3><div class="row"><input id="adC" type="number" placeholder="Số xu" aria-label="Số xu"><button id="adCB">Tặng xu</button></div>
+<div class="row" style="margin-top:6px"><button class="qc" data-n="100">+100</button><button class="qc" data-n="1000">+1.000</button><button class="qc" data-n="10000">+10.000</button><button class="qc" data-n="100000">+100.000</button></div>
 <h3>Bóng (tướng)</h3><select id="adB" aria-label="Chọn bóng"></select><div class="row" style="margin-top:6px"><button id="adBG">Tặng</button><button id="adBR">Thu hồi</button><button id="adBA">Mở TẤT CẢ</button></div>
+<h3>Uy tín & khóa</h3><div class="row"><input id="adR" type="number" min="0" max="100" placeholder="Uy tín 0-100"><button id="adRB">Đặt uy tín</button><button id="adUB">Gỡ khóa</button></div>
 <h3>Quản trị viên</h3><div class="row"><button id="adAA">Thêm admin</button><button id="adAR">Gỡ admin (chủ)</button></div>
-<h3>Nguy hiểm</h3><button class="rs" id="adDel" style="border-color:#C62828;color:#C62828">XÓA TÀI KHOẢN NÀY</button>
-<div id="adL"></div><div class="msg" id="adM" role="alert"></div></div></div>
+<h3>Nguy hiểm</h3><button class="rs" id="adDel" style="border-color:#C62828;color:#C62828">XÓA TÀI KHOẢN NÀY</button><div id="adL"></div></div>
+<div id="adG" class="tp"><h3>Thông báo cho mọi người</h3><div class="row"><input id="bcT" maxlength="160" placeholder="Nội dung thông báo"><button id="bcB">Gửi</button></div>
+<h3>Phát hộp quà (mở như rương)</h3><label for="gT">Tên hộp quà</label><input id="gT" maxlength="30" value="Hộp quà admin">
+<div class="row"><input id="gMin" type="number" min="0" value="100" aria-label="Xu tối thiểu" placeholder="Xu tối thiểu"><input id="gMax" type="number" min="0" value="1000" aria-label="Xu tối đa" placeholder="Xu tối đa"></div>
+<label for="gP">Tỉ lệ ra bóng mới (%)</label><input id="gP" type="number" min="0" max="100" value="10"><label for="gD">Thời hạn</label>
+<select id="gD"><option value="0">Không giới hạn</option><option value="1">1 giờ</option><option value="24">24 giờ</option><option value="168">7 ngày</option><option value="720">30 ngày</option></select>
+<label for="gTo">Gửi cho</label><select id="gTo"><option value="all">TẤT CẢ người chơi</option><option value="one">Chỉ người đang chọn ở tab Người dùng</option></select><button class="rs" id="gB">PHÁT QUÀ</button></div>
+<div id="adS" class="tp"><h3>Khóa chế độ (toàn server)</h3><div class="row" id="adMd"></div><h3>Khóa bóng (toàn server)</h3><select id="adLB" aria-label="Chọn bóng khóa"></select>
+<div class="row" style="margin-top:6px"><button id="lkB">Khóa bóng</button><button id="ulB">Mở khóa bóng</button></div><div id="adLL" style="margin-top:8px;font-size:13px"></div></div>
+<div id="adMt" class="tp"><p style="font-size:14px">Thanh nút admin hiện ở cuối màn hình khi bạn vào trận BOT hoặc online: bất tử, máu x2, hồi máu, địch 1 máu, địch -30, địch đứng yên, địch to/nhỏ, chậm thời gian và JUMPSCARE. Chỉ áp dụng ở máy của bạn (JUMPSCARE gửi được cho đối thủ online).</p><div class="row"><button id="adxT">Thanh admin trong trận: BẬT</button><button id="jsT">Thử JUMPSCARE</button></div></div>
+<div class="msg" id="adM" role="alert"></div></div></div>
+<div id="mb" class="ov" role="dialog" aria-modal="true" aria-label="Hòm thư"><div class="bx" style="max-width:640px;width:94vw"><button class="x" id="mbX" aria-label="Đóng">×</button><h2>HÒM THƯ</h2><div id="mbR" class="msg ok"></div><div id="mbL"></div></div></div>
+<div id="dock"><button id="dkF">BẠN BÈ</button><button id="dkM" class="bd">HÒM THƯ<span class="bdg" id="dkN" hidden>0</span></button><button id="dkR">UY TÍN 100</button><button id="dkA" hidden>ADMIN</button></div>
+<div id="adx"></div><div id="bc" role="status"></div><div id="js" aria-hidden="true"><canvas id="jsC" width="560" height="560"></canvas></div>
 <div id="ac" class="ov" role="dialog" aria-modal="true" aria-label="Tài khoản"><div class="bx"><button class="x" id="acX" aria-label="Đóng">×</button><h2>TÀI KHOẢN</h2>
 <div class="pr"><img id="acA" alt="Ảnh đại diện" width="72" height="72"><div><div id="acN" class="nm"></div><div id="acR"></div><div id="acCo"></div></div></div>
 <button class="rs" id="acFb">Tải ảnh đại diện</button><input type="file" id="acF" accept="image/*" hidden>
@@ -273,7 +296,8 @@ function arena(){g.fillStyle='rgba(255,255,255,.2)';g.fillRect(AX,AY,AS,AS);g.st
  for(const p of PR){if(window.__gojo32&&p.own&&p.own.k===52&&p.tr&&p.keep)continue;if(p.bz){g.strokeStyle='#0FF';g.lineWidth=4;g.beginPath();const L=Math.hypot(p.vx,p.vy)||1,ux=p.vx/L,uy=p.vy/L;for(let i=0;i<=6;i++){const d=i*16,j=i&&i<6?(i%2?7:-7):0;g.lineTo(p.x-ux*d-uy*j,p.y-uy*d+ux*j)}g.stroke();g.strokeStyle='#FFF';g.lineWidth=1.5;g.stroke();continue}g.fillStyle=p.c;g.strokeStyle='#000';g.lineWidth=2;ci(p.x,p.y,p.r,1);ci(p.x,p.y,p.r)}
  for(const e of E){const a=e.t/e.T;g.globalAlpha=Math.max(0,a);if(e.l){g.strokeStyle=e.c;g.lineWidth=4;ln(...e.l)}else{const r=e.r*(.3+.7*(1-a));g.fillStyle=e.c;g.strokeStyle='#000';g.lineWidth=3;ci(e.x,e.y,r,1);ci(e.x,e.y,r)}g.globalAlpha=1}
  for(let s=0;s<2;s++){const n=B.filter(b=>b.side==s).length+Q[s].length,x=s?905:95;tx('P'+(s+1),x,120,40,s?'#E33':'#27F',1);tx('còn '+n+' bóng',x,165,18,'#fff',1)}
- if(st=='count'){const n=Math.ceil(tm-.6);tx(n>0?''+n:'GO!',W/2,H/2,130,'#fff',1)}
+ if(st=='count'){const n=Math.ceil(tm-.6);tx(n>0?''+n:'GO!',W/2,H/2,130,'#fff',1);
+  if(tm<10&&B.length>=2&&!(window.__SVS&&window.__SVS.on)){const a=Math.max(0,Math.min(1,tm/3))*Math.min(1,(3.6-tm)/.3);if(a>.01){g.save();g.globalAlpha=a;B.slice(0,2).forEach((b,i)=>{const t=N[b.k-1]||'',z=t.length>10?26:34,xx=Math.max(AX+110,Math.min(AX+AS-110,b.x));tx(t,xx,b.y+R+50,z,i?'#FF8A80':'#80D8FF',1)});g.restore()}}}
  if(st=='over'){tx(win==1?'P1 WINNER':win==2?'P2 WINNER':'HÒA',W/2,290,64,'#fff',1);btn(390,350,220,64,'TÁI CHẤN',1,28);btn(390,435,220,50,'MENU',0,22)}}
 function draw(){g.setTransform(1,0,0,1,0,0);const q=g.createLinearGradient(0,0,0,cv.height);q.addColorStop(0,'#4A90E2');q.addColorStop(1,'#7EC0EE');g.fillStyle=q;g.fillRect(0,0,cv.width,cv.height);
  g.setTransform(sc,0,0,sc,ox,oy);g.lineJoin='round';clouds.forEach(cloud);st=='menu'?menu():arena()}
@@ -6399,7 +6423,7 @@ SV.c=SV.c||0;SV.w=SV.w||0;SV.best=SV.best||{boss:0,tower:0,surv:0};
 SV.un=SV.un.filter(i=>i>=1&&i<=999&&!REM46.has(i));for(const s of START)if(!SV.un.includes(s))SV.un.push(s);
 if(!SV.un.includes(SV.pick)||SV.pick>999)SV.pick=81;
 const save=()=>{try{localStorage.setItem(KEY,JSON.stringify(SV))}catch(e){}if(window.__ON)__ON.cloudSave()};
-const has=id=>SV.un.includes(id);
+const has=id=>SV.un.includes(id)&&!(window.__LK&&window.__LK.has(id));
 /* ---------- state ---------- */
 const U={s:'home',page:0,run:null,cur:null,res:null,resT:0,ov:0,toast:'',tt:0,wipe:0,aim:null,w:null,g:{t:0,id:0,ph:0}};window.__U=U;
 
@@ -6431,11 +6455,11 @@ const ON={user:null,room:null,role:null,opp:null,oppAng:null,sentAng:0,resSent:0
  sendAng(a){if(ON.sentAng)return;ON.sentAng=1;const F=ON.F;F.db.set(F.db.ref(F.rdb,'rooms/'+ON.room+'/r'+U.run.r+'/ang/'+ON.user.uid),a)},
  ready(A){const now=performance.now();if(!ON.sentAng){if(A.ang==null)A.ang=Math.random()*TAU;A.locked=1;ON.sendAng(A.ang)}
   if(ON.oppAng!=null)return true;if(now-A.t0>30000){ON.oppAng=Math.random()*TAU;return true}return false},
- settle(w){const F=ON.F,k=ON.rk?'ranked/'+ON.rk.mid+'/res/'+ON.rk.fr:'rooms/'+ON.room+'/res'+U.run.r;
-  if(ON.role==='a'){if(!ON.resSent){ON.resSent=1;F.db.set(F.db.ref(F.rdb,k),{w:w})}return true}
-  if(ON.resV===undefined){ON.resV=null;ON.sub(k,v=>{if(v)ON.resV=v.w})}
-  if(ON.resV==null){g.setTransform(sc,0,0,sc,ox,oy);tx('ĐANG CHỐT KẾT QUẢ...',W/2,H-60,22,'#fff',1);return false}
-  const v=ON.resV;win=v===1?2:v===0?0:1;return true},
+ settle(w){const F=ON.F,k=ON.rk?'ranked/'+ON.rk.mid+'/res/'+ON.rk.fr:'rooms/'+ON.room+'/res'+U.run.r,v=ON.role==='a'?w:(w===1?2:w===0?0:1);
+  if(!ON.resSent){ON.resSent=performance.now();F.db.runTransaction(F.db.ref(F.rdb,k),c=>c||{w:v}).catch(()=>{})}
+  if(ON.resV===undefined){ON.resV=null;ON.sub(k,x=>{if(x)ON.resV=x.w})}
+  if(ON.resV==null){g.setTransform(sc,0,0,sc,ox,oy);tx('ĐANG CHỐT KẾT QUẢ...',W/2,H-60,22,'#fff',1);if(performance.now()-ON.resSent>9000)ON.resV=v;return false}
+  const c=ON.resV;win=ON.role==='a'?c:(c===1?2:c===0?0:1);return true},
  async logout(){try{ON.keep.forEach(f=>f());ON.keep=[];if(ON.F){await ON.F.db.remove(ON.F.db.ref(ON.F.rdb,'presence/'+ON.user.uid));await ON.F.au.signOut(ON.F.auth)}}catch(e){}ON.user=null;ON.P={prof:null,friends:{},reqs:{},invs:{},online:{}};ON.av=null;ON.leave();U.s='home'}};
 const OPN=()=>ON.live()&&ON.opp?String(ON.opp.name).toUpperCase().slice(0,12):'BOT';
 function drawMM(){const m=ON.mm,now=performance.now(),nm0=String(ON.user.name).slice(0,16);btn(...BACK,'‹ TRANG CHỦ',0,14);tx('ONLINE BÓNG',W/2,60,52,'#fff',1);
@@ -6483,11 +6507,11 @@ function mmClick(x,y){const m=ON.mm;if(inR(x,y,BACK)){if(m.s==='search')ON.cance
 /* ----- hồ sơ, bạn bè, phòng, rank 5v5 ----- */
 const RANKS=[['Đồng',0,'#B87333'],['Bạc',100,'#C0C0C0'],['Vàng',250,'#FFD54A'],['Bạch Kim',450,'#7FDBFF'],['Kim Cương',700,'#B388FF'],['Tinh Anh',1000,'#FF6F91'],['Cao Thủ',1400,'#FF8A00'],['Chiến Tướng',1900,'#FF1744']];
 const rankOf=p=>{let r=RANKS[0];for(const x of RANKS)if(p>=x[1])r=x;return r};
-const $a=id=>document.getElementById(id),mk=(t,x,c,f)=>{const e=document.createElement(t);if(x!=null)e.textContent=x;if(c)e.className=c;if(f)e.onclick=f;return e};
+const $a=id=>document.getElementById(id),mkEl=(t,x,c,f)=>{const e=document.createElement(t);if(x!=null)e.textContent=x;if(c)e.className=c;if(f)e.onclick=f;return e};
 function defAv(n){const c=document.createElement('canvas');c.width=c.height=72;const x=c.getContext('2d');let h=0;for(const ch of String(n))h=(h*31+ch.charCodeAt(0))%360;x.fillStyle='hsl('+h+',55%,40%)';x.fillRect(0,0,72,72);x.fillStyle='#fff';x.font='bold 38px Arial';x.textAlign='center';x.textBaseline='middle';x.fillText(String(n).charAt(0).toUpperCase(),36,38);return c.toDataURL()}
 const am=(t,ok)=>{$a('acM').textContent=t||'';$a('acM').className='msg'+(ok?' ok':'')};
 const R_=(a)=>Math.random()*a|0;
-Object.assign(ON,{P:{prof:null,friends:{},reqs:{},invs:{},online:{}},keep:[],msubs:[],av:null,rk:null,hostCode:'',
+window.__ON=ON;Object.assign(ON,{P:{prof:null,friends:{},reqs:{},invs:{},online:{}},keep:[],msubs:[],av:null,rk:null,hostCode:'',
  subK(path,fn){const F=ON.F;ON.keep.push(F.db.onValue(F.db.ref(F.rdb,path),s=>fn(s.val())))},
  msub(path,fn){const F=ON.F;ON.msubs.push(F.db.onValue(F.db.ref(F.rdb,path),s=>fn(s.val())))},
  openAuth(t){ON.modal(true);ON.setTab(t)},
@@ -6512,9 +6536,9 @@ Object.assign(ON,{P:{prof:null,friends:{},reqs:{},invs:{},online:{}},keep:[],msu
  async joinRoom(c){const F=ON.F,db=F.db,rf=db.ref(F.rdb,'roomcodes/'+c.trim().toUpperCase()),h=(await db.get(rf)).val();if(!h)return'Không có phòng này';if(h.uid===ON.user.uid)return'Đây là phòng của bạn';await db.remove(rf);ON.duelWith(h.uid,h.name);return'ok'},
  panel(){const p=ON.P.prof,u=ON.user;if(!u||!p||!$a('ac').classList.contains('on'))return;$a('acA').src=p.avatar||defAv(u.name);$a('acN').textContent=u.name+(u.kind==='guest'?' (khách)':'');const r=rankOf(p.pts||0);$a('acR').textContent='Rank: '+r[0]+' • '+(p.pts||0)+' điểm';$a('acCo').textContent=(p.code&&u.kind==='acc')?'ID người dùng: '+p.code:'';
   const L=$a('acL'),P=ON.P;L.textContent='';
-  for(const k in P.reqs){const r2=P.reqs[k],d=mk('div',null,'rw');d.append(mk('span','Lời mời: '+r2.name),mk('button','Nhận',0,()=>ON.accept(k,r2.name,1)),mk('button','Bỏ',0,()=>ON.accept(k,r2.name,0)));L.append(d)}
-  for(const k in P.invs){const i=P.invs[k],d=mk('div',null,'rw');d.append(mk('span','Mời đấu: '+i.name),mk('button','Vào',0,()=>ON.acceptInv(k,i.name)));L.append(d)}
-  for(const k in P.friends){const f=P.friends[k],d=mk('div',null,'rw');d.append(mk('span',(P.online[k]?'● ':'○ ')+f.name));if(P.online[k])d.append(mk('button','Mời',0,()=>ON.invite(k)));L.append(d)}
+  for(const k in P.reqs){const r2=P.reqs[k],d=mkEl('div',null,'rw');d.append(mkEl('span','Lời mời: '+r2.name),mkEl('button','Nhận',0,()=>ON.accept(k,r2.name,1)),mkEl('button','Bỏ',0,()=>ON.accept(k,r2.name,0)));L.append(d)}
+  for(const k in P.invs){const i=P.invs[k],d=mkEl('div',null,'rw');d.append(mkEl('span','Mời đấu: '+i.name),mkEl('button','Vào',0,()=>ON.acceptInv(k,i.name)));L.append(d)}
+  for(const k in P.friends){const f=P.friends[k],d=mkEl('div',null,'rw');d.append(mkEl('span',(P.online[k]?'● ':'○ ')+f.name));if(P.online[k])d.append(mkEl('button','Mời',0,()=>ON.invite(k)));L.append(d)}
   $a('acH').textContent=ON.hostCode?'Mã phòng của bạn: '+ON.hostCode+' (đang chờ người vào)':''},
  /* ----- xếp hạng 5v5 ----- */
  async startRank(){const m=ON.mm;m.s='search';m.mode='rank';m.t0=performance.now();m.msg='';
@@ -6546,7 +6570,7 @@ Object.assign(ON,{P:{prof:null,friends:{},reqs:{},invs:{},online:{}},keep:[],msu
  rkAfter(){U.run=null;U.res=null;U.cur=null;U.aim=null;U.w=null;resetEngine();ON.reset();ON.room=null;ON.role=null;ON.opp=null;U.s='rk'},
  async rkAct(id){const R=ON.rk,d=R.d,F=ON.F,db=F.db,me=R.me,ph=d.phase;R.msg='';
   if(ph==='ban'){const ok=await db.runTransaction(db.ref(F.rdb,'ranked/'+R.mid+'/banned'),cur=>{cur=cur||{};if(cur[id]||Object.values(cur).includes(me)||Object.keys(cur).length>=3)return;cur[id]=me;return cur});if(!ok.committed)R.msg='Không cấm được bóng này.'}
-  else if(ph==='pick'){if((d.banned||{})[id]){R.msg='Bóng này đã bị cấm.';return}const ok=await db.runTransaction(db.ref(F.rdb,'ranked/'+R.mid+'/taken'),cur=>{cur=cur||{};if(cur[id])return;cur[id]=me;return cur});if(ok.committed)await db.set(db.ref(F.rdb,'ranked/'+R.mid+'/picked/'+me),id);else R.msg='Có người vừa chọn bóng này trước bạn, hãy chọn bóng khác!'}}});
+  else if(ph==='pick'){if(window.__LK.has(id)){R.msg='Bóng này đang bị admin khóa.';return}if((d.banned||{})[id]){R.msg='Bóng này đã bị cấm.';return}const ok=await db.runTransaction(db.ref(F.rdb,'ranked/'+R.mid+'/taken'),cur=>{cur=cur||{};if(cur[id])return;cur[id]=me;return cur});if(ok.committed)await db.set(db.ref(F.rdb,'ranked/'+R.mid+'/picked/'+me),id);else R.msg='Có người vừa chọn bóng này trước bạn, hãy chọn bóng khác!'}}});
 window.__ON=ON;function rkList(){const R=ON.rk,d=R.d;return d.phase==='ban'?VIS():ownedList()}
 function rkTurnMe(){const R=ON.rk,d=R.d,t=d.turn||0;return R.me===Object.values(d.A)[t]||R.me===Object.values(d.B)[t]}
 const RKG=(i)=>[262+(i%5)*100,100+((i/5)|0)*118,92,110],RKB={pg:[[380,590,60,34],[560,590,60,34]],ok:[330,640,340,58],quit:[20,672,150,36]};
@@ -6633,7 +6657,7 @@ const ADM={on:false,owner:false,t:null,
   const p=(await db.get(ADM.R('users/'+uid))).val();if(!p)return ADM.msg('Không có người dùng này');ADM.pick(uid,p);ADM.msg('')},
  pick(uid,p){ADM.t={uid,p};const sv=p.sv||{},un=Array.isArray(sv.un)?sv.un:Object.values(sv.un||{});$a('adI').textContent=p.name+' • ID '+(p.code||'-')+'\nUID '+uid+'\nXu '+(sv.c||0)+' • Bóng '+un.length+'/'+TOTB()+' • Điểm '+(p.pts||0)},
  async grant(g){const t=ADM.t;if(!t)return ADM.msg('Hãy chọn người dùng trước');await ON.F.db.set(ON.F.db.push(ADM.R('adminGrants/'+t.uid)),g);ADM.msg('Đã gửi. Người chơi nhận ngay khi online hoặc lúc đăng nhập tới.',1);setTimeout(()=>ADM.find(t.uid),1500)},
- async list(){const db=ON.F.db,s=await db.get(db.query(ADM.R('users'),db.limitToFirst(40))),L=$a('adL'),v=s.val()||{};L.textContent='';for(const k in v){const p=v[k],d=mk('div',null,'rw');d.append(mk('span',(p.name||'?')+' • '+(p.code||'khách')),mk('button','Chọn',0,()=>ADM.pick(k,p)));L.append(d)}},
+ async list(){const db=ON.F.db,s=await db.get(db.query(ADM.R('users'),db.limitToFirst(40))),L=$a('adL'),v=s.val()||{};L.textContent='';for(const k in v){const p=v[k],d=mkEl('div',null,'rw');d.append(mkEl('span',(p.name||'?')+' • '+(p.code||'khách')),mkEl('button','Chọn',0,()=>ADM.pick(k,p)));L.append(d)}},
  async setAdmin(on){const t=ADM.t;if(!t)return ADM.msg('Hãy chọn người dùng trước');if(!on&&!ADM.owner)return ADM.msg('Chỉ chủ (owner) mới gỡ được admin');await ON.F.db.set(ADM.R('admins/'+t.uid),on?true:null);ADM.msg(on?'Đã thêm admin':'Đã gỡ admin',1)},
  async del(){const t=ADM.t;if(!t)return ADM.msg('Hãy chọn người dùng trước');if(t.uid===ON.user.uid)return ADM.msg('Không thể tự xóa tài khoản đang đăng nhập');
   const db=ON.F.db;if((await db.get(ADM.R('admins/'+t.uid))).val()===true&&!ADM.owner)return ADM.msg('Chỉ chủ (owner) mới xóa được admin khác');
@@ -6650,12 +6674,126 @@ $a('adAA').onclick=()=>ADM.run(()=>ADM.setAdmin(true));$a('adAR').onclick=()=>AD
 {const _al=ON.afterLogin;ON.afterLogin=async function(){const F=ON.F,u=ON.user;try{if(F&&(await F.db.get(F.db.ref(F.rdb,'banned/'+u.uid))).val()){toast('Tài khoản này đã bị xóa');return ON.logout()}}catch(e){}await _al.call(ON);if(u.kind==='acc'&&F.auth.currentUser){try{const r=F.db.ref(F.rdb,'usernames/'+ukey(u.name));if(!(await F.db.get(r)).val())await F.db.set(r,{uid:u.uid,email:F.auth.currentUser.email})}catch(e){}}await ADM.init()};
  const _lo=ON.logout;ON.logout=async function(){ADM.on=false;ADM.t=null;$a('acAd').hidden=true;$a('ad').classList.remove('on');return _lo.call(ON)}}
 
+/* ===== UPDATE 1: đồng bộ kết quả, uy tín, hòm thư, khóa toàn server, công cụ admin ===== */
+window.__LK=window.__LK||new Set();
+const CFGS={modes:{},locked:{},seen:0};
+function mlock(k){if(CFGS.modes[k]){toast('Chế độ này đang bị admin khóa');return true}return false}
+function banner(t){const e=$a('bc');e.textContent='THÔNG BÁO: '+t;e.style.display='block';clearTimeout(banner.t);banner.t=setTimeout(()=>{e.style.display='none'},9000)}
+/* --- đồng bộ ván online: ai xong trước ghi kết quả, người kia dừng ngay; đối thủ thoát = thắng --- */
+function oppForfeit(){if(ON.forf)return;ON.forf=1;SV.w++;SV.c+=WINCOIN;save();REP.clearMatch();toast('Đối thủ đã thoát! Bạn thắng +'+WINCOIN+' xu');U.run=null;U.res=null;U.cur=null;U.aim=null;U.w=null;resetEngine();ON.leave()}
+function onWatch(){
+ if(!(U.run&&ON.live()&&ON.F&&ON.user&&!ON.rk))return;const S=U.run,F=ON.F;
+ if(ON.opp&&!ON.leftSub){ON.leftSub=1;ON.sub('rooms/'+ON.room+'/left/'+ON.opp.uid,v=>{if(v)ON.oppLeft=1})}
+ if(!ON.fxSub){ON.fxSub=Date.now();ON.sub('rooms/'+ON.room+'/fx/'+ON.user.uid,v=>{if(v&&v.ts>ON.fxSub&&Date.now()-v.ts<8000){ON.fxSub=v.ts;jumpscare()}})}
+ if(ON.oppLeft&&!ON.forf&&!(U.res&&S.r>=ROUNDS-1)){oppForfeit();return}
+ if(U.s==='wait'&&U.w&&U.w.dur>1e11&&performance.now()-U.w.t0>60000){oppForfeit();return}
+ if(st==='fight'){const k='rooms/'+ON.room+'/res'+S.r;if(ON.resV===undefined){ON.resV=null;ON.sub(k,v=>{if(v)ON.resV=v.w})}
+  if(ON.resV!=null){win=ON.role==='a'?ON.resV:(ON.resV===1?2:ON.resV===0?0:1);st='over'}}}
+ON.markLeft=function(){try{if(ON.F&&ON.room&&ON.user&&!ON.rk)ON.F.db.set(ON.F.db.ref(ON.F.rdb,'rooms/'+ON.room+'/left/'+ON.user.uid),true)}catch(e){}};
+{const f=ON.reset;ON.reset=function(){f();ON.leftSub=0;ON.fxSub=0;ON.forf=0}}
+{const f=ON.found;ON.found=function(rid,role,opp){ON.oppLeft=0;f(rid,role,opp);REP.matchStart(rid,'rooms/'+rid+'/left/'+ON.user.uid)}}
+{const f=ON.rkJoin;ON.rkJoin=async function(mid){await f(mid);if(ON.rk)REP.matchStart('rk'+mid)}}
+{const f=leave;leave=function(){const S=U.run,fin=S&&U.res&&S.r>=ROUNDS-1;if(S&&ON.live()&&REP.acc()&&!fin&&!ON.forf)REP.penalty('Thoát giữa trận');if(ON.live()){ON.markLeft();REP.clearMatch()}f()}}
+{const f=resolve;resolve=function(){f();REP.game();const S=U.run;if(S&&S.r>=ROUNDS-1)REP.clearMatch()}}
+/* --- uy tín --- */
+const REP={
+ day:()=>new Date(Date.now()+252e5).toISOString().slice(0,10),
+ p:()=>ON.P.prof||{},
+ acc:()=>!!(ON.user&&ON.user.kind==='acc'&&ON.F),
+ rep(){const r=REP.p().rep;return typeof r==='number'?r:100},
+ async upd(o){if(!REP.acc())return;ON.P.prof=Object.assign(ON.P.prof||{},o);const F=ON.F;try{await F.db.update(F.db.ref(F.rdb,'users/'+ON.user.uid),o)}catch(e){}},
+ gate(){if(!REP.acc())return true;const p=REP.p(),n=Date.now();if(p.banUntil>n){toast('Tài khoản bị khóa online còn '+Math.ceil((p.banUntil-n)/864e5)+' ngày');return false}
+  if(REP.rep()<90){toast('Uy tín '+REP.rep()+'/100: dưới 90 nên chưa chơi online được. Chơi đủ 10 ván mỗi ngày để +10');return false}return true},
+ async penalty(why){if(!REP.acc())return;const p=REP.p(),r=Math.max(0,REP.rep()-5);
+  if(r<20){if((p.strikes||0)>=1){await REP.destroy();return}await REP.upd({rep:50,banUntil:Date.now()+7*864e5,strikes:(p.strikes||0)+1,inMatch:null});toast('Uy tín quá thấp: khóa online 7 ngày. Tái phạm sẽ bị xóa tài khoản');return}
+  await REP.upd({rep:r});toast((why||'Thoát trận')+': -5 uy tín (còn '+r+')')},
+ async game(){if(!REP.acc())return;const d=REP.day(),p=REP.p(),g=(p.repDay===d?(p.repGames||0):0)+1,o={repDay:d,repGames:g};
+  if(g>=10&&p.repGain!==d&&!(p.banUntil>Date.now())){o.repGain=d;o.rep=Math.min(100,REP.rep()+10);toast('Chơi đủ 10 ván hôm nay: uy tín +10')}await REP.upd(o)},
+ matchStart(id,lp){if(!REP.acc())return;REP.upd({inMatch:String(id)});try{if(lp){const F=ON.F;F.db.onDisconnect(F.db.ref(F.rdb,lp)).set(true)}}catch(e){}},
+ clearMatch(){if(REP.acc()&&REP.p().inMatch)REP.upd({inMatch:null})},
+ async destroy(){const F=ON.F,db=F.db,u=ON.user,p=REP.p(),up={};up['banned/'+u.uid]=true;up['users/'+u.uid]=null;if(p.code)up['codes/'+p.code]=null;up['usernames/'+ukey(u.name)]=null;['friends','reqs','inv','presence','rkm'].forEach(k=>up[k+'/'+u.uid]=null);
+  try{await db.update(db.ref(F.rdb),up)}catch(e){}toast('Tài khoản bị xóa vì tái phạm làm uy tín quá thấp');ON.logout()}};
+for(const k of ['start','startRank','duelWith']){const f=ON[k];ON[k]=function(...a){if(!REP.gate())return;return f.apply(ON,a)}}
+/* --- hòm thư: quà + lời mời --- */
+const MBX={g:{},c:{},m:{},
+ list(){const n=Date.now(),L=[];for(const id in MBX.g){const x=MBX.g[id];if(!MBX.c[id]&&(!x.exp||x.exp>n))L.push({id,src:'g',x})}for(const id in MBX.m){const x=MBX.m[id];if(!x.exp||x.exp>n)L.push({id,src:'m',x})}return L.sort((a,b)=>(b.x.ts||0)-(a.x.ts||0))},
+ n(){return MBX.list().length+Object.keys(ON.P.reqs||{}).length+Object.keys(ON.P.invs||{}).length},
+ draw(){const L=$a('mbL');L.textContent='';const add=(t,btns)=>{const d=mkEl('div',null,'gi');d.append(mkEl('span',t));const r=mkEl('span');btns.forEach(b=>r.append(mkEl('button',b[0],0,b[1])));d.append(r);L.append(d)};
+  if(!ON.user){L.append(mkEl('p','Hãy đăng nhập để xem hòm thư.'));return}
+  MBX.list().forEach(it=>{const x=it.x,ex=x.exp?' • còn '+Math.max(1,Math.ceil((x.exp-Date.now())/36e5))+' giờ':' • không hết hạn';add((x.title||'Hộp quà')+ex,[['MỞ',()=>MBX.open(it)]])});
+  const rq=ON.P.reqs||{},iv=ON.P.invs||{};
+  for(const k in rq){const nme=(rq[k]&&rq[k].name)||'Người chơi';add('Kết bạn: '+nme,[['CHẤP NHẬN',()=>ON.accept(k,nme,true)],['TỪ CHỐI',()=>ON.accept(k,nme,false)]])}
+  for(const k in iv){const nme=(iv[k]&&iv[k].name)||'Người chơi';add('Mời đấu: '+nme,[['VÀO ĐẤU',()=>{$a('mb').classList.remove('on');ON.acceptInv(k,nme)}],['XÓA',()=>ON.F.db.remove(ON.F.db.ref(ON.F.rdb,'inv/'+ON.user.uid+'/'+k))]])}
+  if(!L.children.length)L.append(mkEl('p','Chưa có thư nào.'))},
+ async open(it){const F=ON.F,db=F.db,u=ON.user,x=it.x;if(u.kind!=='acc')return toast('Cần tài khoản đăng ký để nhận quà');
+  const lo=Math.max(0,x.cmin|0),hi=Math.max(lo,x.cmax|0),pool=VIS().filter(i=>!SV.un.includes(i)&&!window.__LK.has(i));let r;
+  if(pool.length&&Math.random()*100<(x.bp||0))r={b:pool[Math.random()*pool.length|0]};else r={c:lo+Math.floor(Math.random()*(hi-lo+1))};
+  try{if(it.src==='g')await db.set(db.ref(F.rdb,'claims/'+u.uid+'/'+it.id),true);else await db.remove(db.ref(F.rdb,'mail/'+u.uid+'/'+it.id))}catch(e){return toast('Không mở được: '+(e.code||e.message))}
+  if(r.b)SV.un.push(r.b);else SV.c=Math.min(99999999,SV.c+r.c);save();const e=$a('mbR');e.textContent='Đang mở rương...';e.classList.add('shk');
+  setTimeout(()=>{e.classList.remove('shk');e.textContent=r.b?'BÓNG MỚI: '+nm(r.b)+'!':'Bạn nhận được +'+r.c+' xu!';MBX.draw()},700)}};
+/* --- jumpscare --- */
+function jumpscare(){const now=Date.now();if(now-(jumpscare.t||0)<20000)return;jumpscare.t=now;const j=$a('js'),c=$a('jsC'),x=c.getContext('2d');
+ const gr=x.createRadialGradient(280,280,20,280,280,330);gr.addColorStop(0,'#5a0000');gr.addColorStop(1,'#000');x.fillStyle=gr;x.fillRect(0,0,560,560);
+ x.fillStyle='#d8d2c4';x.beginPath();x.ellipse(280,285,190,235,0,0,6.3);x.fill();x.fillStyle='#000';x.beginPath();x.ellipse(205,225,52,70,-.2,0,6.3);x.ellipse(355,225,52,70,.2,0,6.3);x.fill();
+ x.fillStyle='#fff';x.beginPath();x.arc(205,232,9,0,6.3);x.arc(355,232,9,0,6.3);x.fill();x.fillStyle='#000';x.beginPath();x.moveTo(280,285);x.lineTo(262,335);x.lineTo(298,335);x.fill();
+ x.beginPath();x.moveTo(170,380);for(let i=0;i<=10;i++)x.lineTo(170+i*22,380+(i%2?70:0));x.lineTo(390,470);x.lineTo(170,470);x.fill();x.fillStyle='#d8d2c4';for(let i=0;i<10;i++){x.beginPath();x.moveTo(176+i*22,384);x.lineTo(186+i*22,418);x.lineTo(198+i*22,384);x.fill()}
+ j.style.display='flex';const rm=matchMedia('(prefers-reduced-motion: reduce)').matches;if(!rm){j.classList.add('sh');try{audio();if(AC&&!G_MUTE()){const o=AC.createOscillator(),gn=AC.createGain();o.type='sawtooth';o.frequency.setValueAtTime(1900,AC.currentTime);o.frequency.exponentialRampToValueAtTime(70,AC.currentTime+.9);gn.gain.value=.25;o.connect(gn);gn.connect(AC.destination);o.start();o.stop(AC.currentTime+1)}}catch(e){}}
+ setTimeout(()=>{j.style.display='none';j.classList.remove('sh')},rm?900:1500)}
+function G_MUTE(){try{return !!window.SND_OFF}catch(e){return false}}
+/* --- công cụ admin trong trận --- */
+const ADMX={ts:1,tg:{},show:true,
+ mine:()=>B.filter(b=>b.side===0),foe:()=>B.filter(b=>b.side===1),
+ act:{inv(){ADMX.tg.inv=!ADMX.tg.inv},dbl(){ADMX.mine().forEach(b=>{b.max*=2;b.hp=b.max})},heal(){ADMX.mine().forEach(b=>b.hp=b.max)},one(){ADMX.foe().forEach(b=>b.hp=1)},hit(){ADMX.foe().forEach(b=>b.hp=Math.max(1,b.hp-30))},
+  stay(){ADMX.tg.stay=!ADMX.tg.stay},big(){ADMX.tg.big=!ADMX.tg.big;ADMX.tg.small=0;ADMX.foe().forEach(b=>{b.r=(b.r0||(b.r0=b.r))*(ADMX.tg.big?2:1)})},small(){ADMX.tg.small=!ADMX.tg.small;ADMX.tg.big=0;ADMX.foe().forEach(b=>{b.r=(b.r0||(b.r0=b.r))*(ADMX.tg.small?.5:1)})},
+  slow(){ADMX.tg.slow=!ADMX.tg.slow;ADMX.ts=ADMX.tg.slow?.4:1},
+  scare(){if(ON.live()&&ON.F&&ON.opp){ON.F.db.set(ON.F.db.ref(ON.F.rdb,'rooms/'+ON.room+'/fx/'+ON.opp.uid),{t:'js',ts:Date.now()});toast('Đã gửi jumpscare cho đối thủ')}else{jumpscare.t=0;jumpscare()}}},
+ tick(){if(!ADM.on)return;if(ADMX.tg.inv)ADMX.mine().forEach(b=>{b.hp=b.max});if(ADMX.tg.stay)ADMX.foe().forEach(b=>{b.fz=Math.max(b.fz,.3)})},
+ btns:[['inv','BẤT TỬ'],['dbl','MÁU x2'],['heal','HỒI MÁU'],['one','ĐỊCH 1 MÁU'],['hit','ĐỊCH -30'],['stay','ĐỊCH ĐỨNG YÊN'],['big','ĐỊCH TO'],['small','ĐỊCH NHỎ'],['slow','CHẬM x0.4'],['scare','JUMPSCARE']],
+ build(){const a=$a('adx');a.textContent='';ADMX.btns.forEach(([k,t])=>{const b=mkEl('button',t,0,()=>{ADMX.act[k]();b.classList.toggle('on',!!ADMX.tg[k])});b.id='ax_'+k;a.append(b)})},
+ reset(){ADMX.tg={};ADMX.ts=1;document.querySelectorAll('#adx button').forEach(b=>b.classList.remove('on'))}};
+{const f=upd;upd=function(dt){ADMX.tick();f(dt*ADMX.ts)}}
+{const f=begin;begin=function(){ADMX.reset();f()}}
+/* --- ADMIN mở rộng --- */
+Object.assign(ADM,{
+ async cfgSet(p,v){await ON.F.db.set(ADM.R('config/'+p),v)},
+ cfgUI(){const md=$a('adMd');if(!md)return;md.textContent='';[['all','ALL BÓNG'],['online','ONLINE'],['bot','BOT'],['surv','SINH TỒN']].forEach(([k,t])=>{const on=!!CFGS.modes[k];md.append(mkEl('button',t+': '+(on?'ĐANG KHÓA':'MỞ'),on?'pri':0,()=>ADM.run(()=>ADM.cfgSet('modes/'+k,on?null:true))))});
+  const L=Object.keys(CFGS.locked).filter(k=>CFGS.locked[k]);$a('adLL').textContent=L.length?'Đang khóa: '+L.map(i=>i+'. '+nm(+i)).join(' • '):'Chưa khóa bóng nào'},
+ async gift(){const T=$a('gT').value.trim()||'Hộp quà',lo=Math.max(0,Math.trunc(+$a('gMin').value)||0),hi=Math.max(lo,Math.trunc(+$a('gMax').value)||0),bp=Math.min(100,Math.max(0,Math.trunc(+$a('gP').value)||0)),h=+$a('gD').value,o={title:T,cmin:lo,cmax:hi,bp,ts:Date.now(),exp:h?Date.now()+h*36e5:0,by:ON.user.name};
+  const db=ON.F.db;if($a('gTo').value==='one'){if(!ADM.t)return ADM.msg('Chưa chọn người dùng ở tab NGƯỜI DÙNG');await db.set(db.push(ADM.R('mail/'+ADM.t.uid)),o)}else await db.set(db.push(ADM.R('gifts')),o);ADM.msg('Đã phát quà',1)},
+ tab(id){document.querySelectorAll('#ad .tp').forEach(e=>e.classList.toggle('on',e.id===id));document.querySelectorAll('#adT button').forEach(b=>b.classList.toggle('pri',b.dataset.t===id))}});
+{const f=ADM.init;ADM.init=async function(){await f.call(ADM);const sl=[$a('adLB')];if(ADM.on)sl.forEach(e=>{e.textContent='';VIS().forEach(i=>{const o=document.createElement('option');o.value=i;o.textContent=i+'. '+nm(i);e.append(o)})});$a('dkA').hidden=!ADM.on;ADMX.build();ADM.cfgUI()}}
+document.querySelectorAll('#adT button').forEach(b=>b.onclick=()=>ADM.tab(b.dataset.t));
+document.querySelectorAll('#ad .qc').forEach(b=>b.onclick=()=>ADM.run(()=>ADM.grant({t:'coin',n:+b.dataset.n})));
+$a('bcB').onclick=()=>ADM.run(async()=>{const t=$a('bcT').value.trim();if(!t)return ADM.msg('Nhập nội dung');await ADM.cfgSet('broadcast',{text:t.slice(0,160),ts:Date.now(),by:ON.user.name});ADM.msg('Đã gửi thông báo',1)});
+$a('gB').onclick=()=>ADM.run(()=>ADM.gift());
+$a('lkB').onclick=()=>ADM.run(()=>ADM.cfgSet('locked/'+$a('adLB').value,true));$a('ulB').onclick=()=>ADM.run(()=>ADM.cfgSet('locked/'+$a('adLB').value,null));
+$a('adRB').onclick=()=>ADM.run(async()=>{if(!ADM.t)return ADM.msg('Chưa chọn người dùng');const v=Math.min(100,Math.max(0,Math.trunc(+$a('adR').value)));await ON.F.db.update(ADM.R('users/'+ADM.t.uid),{rep:v});ADM.msg('Đã đặt uy tín '+v,1);ADM.find(ADM.t.uid)});
+$a('adUB').onclick=()=>ADM.run(async()=>{if(!ADM.t)return ADM.msg('Chưa chọn người dùng');await ON.F.db.update(ADM.R('users/'+ADM.t.uid),{banUntil:0,strikes:0});ADM.msg('Đã gỡ khóa',1)});
+$a('adxT').onclick=()=>{ADMX.show=!ADMX.show;$a('adxT').textContent='Thanh admin trong trận: '+(ADMX.show?'BẬT':'TẮT')};
+$a('jsT').onclick=()=>{jumpscare.t=0;jumpscare()};
+$a('js').onclick=()=>{$a('js').style.display='none'};
+$a('mbX').onclick=()=>$a('mb').classList.remove('on');
+$a('dkF').onclick=()=>{if(!ON.user)ON.modal(true);else ON.acct(true)};
+$a('dkM').onclick=()=>{if(!ON.user){ON.modal(true);return}$a('mbR').textContent='';MBX.draw();$a('mb').classList.add('on')};
+$a('dkR').onclick=()=>toast(REP.acc()?'Uy tín '+REP.rep()+'/100. Dưới 90: không chơi online. Thoát giữa trận -5. Chơi đủ 10 ván/ngày +10 (1 lần/ngày).':'Đăng nhập tài khoản để có uy tín');
+$a('dkA').onclick=()=>{$a('ad').classList.add('on');ADM.run(()=>ADM.find(ON.user.uid))};
+setInterval(()=>{const home=st==='menu'&&!U.run&&!(window.__SVS&&window.__SVS.on);$a('dock').style.display=home?'flex':'none';const n=ON.user?MBX.n():0,b=$a('dkN');b.hidden=!n;b.textContent=n;$a('dkR').textContent='UY TÍN '+(REP.acc()?REP.rep():'-');
+ $a('adx').style.display=(ADM.on&&ADMX.show&&U.run&&(st==='count'||st==='fight'))?'flex':'none'},300);
+{const f=ON.afterLogin;ON.afterLogin=async function(){await f.call(ON);const F=ON.F,u=ON.user;if(!F||!u)return;
+  ON.subK('gifts',v=>{MBX.g=v||{}});ON.subK('claims/'+u.uid,v=>{MBX.c=v||{}});ON.subK('mail/'+u.uid,v=>{MBX.m=v||{}});
+  if(u.kind==='acc'){try{const pv=(await F.db.get(ADM.R('users/'+u.uid))).val()||{};ON.P.prof=Object.assign(ON.P.prof||{},pv);
+   if(pv.banUntil>Date.now()){toast('Tài khoản bị khóa đến '+new Date(pv.banUntil).toLocaleDateString('vi-VN'));return ON.logout()}
+   if(pv.inMatch){await REP.penalty('Thoát giữa trận lần trước');await REP.upd({inMatch:null})}}catch(e){}}}}
+(async()=>{try{const F=await ON.fb(),db=F.db;db.onValue(db.ref(F.rdb,'config'),s=>{const v=s.val()||{};CFGS.modes=v.modes||{};CFGS.locked=v.locked||{};window.__LK=new Set(Object.keys(CFGS.locked).filter(k=>CFGS.locked[k]).map(Number));const b=v.broadcast;if(b&&b.ts){if(b.ts>CFGS.seen&&Date.now()-b.ts<6e5)banner(b.text);CFGS.seen=Math.max(CFGS.seen,b.ts)}ADM.cfgUI()})}catch(e){}})();
+window.__T={REP,MBX,ADMX,CFGS,jumpscare,startRun,confirmPick,onWatch,ADM};
+
+
 function botPick(){const L=BOTW.length?BOTW:Array.from({length:98},(_,i)=>[i+1,1]);let s=0;for(const q of L)s+=q[1];let r=rnd()*s;for(const q of L){r-=q[1];if(r<=0)return q[0]}return L[0][0]}
 function resetEngine(){B=[];PR=[];Z=[];E=[];PA=[];Q=[[],[]];win=0;st='menu';info=0}
 function shuffle(a){for(let i=a.length-1;i>0;i--){const j=rnd()*(i+1)|0;[a[i],a[j]]=[a[j],a[i]]}return a}
-function ownedList(){return SV.un.slice().sort((a,b)=>a-b)}
+function ownedList(){return SV.un.filter(i=>!(window.__LK&&window.__LK.has(i))).sort((a,b)=>a-b)}
 function startRun(){U.run={r:0,wins:0,losses:0,draws:0,coins:0,spent:0,log:[],all:0,paid:0,opts:[],sel:0,gp:0};newRound()}
-function newRound(){ON.reset();const S=U.run;S.all=0;S.paid=0;S.sel=0;S.gp=0;S.opts=shuffle(SV.un.slice()).slice(0,3);U.cur=null;U.res=null;U.ov=0;U.aim=null;U.w=null;resetEngine();U.s='pick'}
+function newRound(){ON.reset();const S=U.run;S.all=0;S.paid=0;S.sel=0;S.gp=0;S.opts=shuffle(ownedList()).slice(0,3);U.cur=null;U.res=null;U.ov=0;U.aim=null;U.w=null;resetEngine();U.s='pick'}
 function leave(){ON.leave();U.run=null;U.res=null;U.cur=null;U.aim=null;U.w=null;resetEngine();U.s='play'}
 function confirmPick(){const S=U.run;if(!S.sel){toast('Hãy chọn 1 bóng trước!');return}
  if(ON.live()){ON.pick(S.sel);return}const e=botPick();U.cur={mine:S.sel,enemy:e,tier:TOF[e]||0};U.w={t0:performance.now(),dur:(1800+rnd()*1800)};U.s='wait'}
@@ -6675,6 +6813,7 @@ function drawHome(){tx('BÓNG vs BÓNG',W/2,100,72,'#fff',1);tx('CHỌN CHẾ Đ
  btn(...HB[1],'ONLINE BÓNG',0,40);tx('Đấu trực tuyến với người khác',W/2,HB[1][1]+HB[1][3]+16,15,'#fff',1);
  btn(...HB[2],'BOT',1,44);btn(...HB[3],'SINH TỒN',0,44);tx('Zombie vô tận • 3 bản đồ • nâng cấp & mua chiêu',W/2,HB[3][1]+HB[3][3]+16,15,'#fff',1);tx('3 round • mỗi round chọn 1 trong 3 bóng ngẫu nhiên • thắng +250 xu',W/2,HB[2][1]+HB[2][3]+16,15,'#fff',1);
  tx('XU: '+SV.c+'   •   ĐÃ MỞ '+SV.un.length+' / '+TOTB()+' BÓNG',W/2,650,22,'#FFD54A',1);
+ ['all','online','bot','surv'].forEach((k,i)=>{if(CFGS.modes[k]){g.fillStyle='rgba(0,0,0,.72)';g.fillRect(HB[i][0],HB[i][1],HB[i][2],HB[i][3]);tx('ĐANG BỊ ADMIN KHÓA',HB[i][0]+HB[i][2]/2,HB[i][1]+HB[i][3]/2,24,'#FF5252',1)}});
  }
 /* ---------- màn PLAY (BOT) ---------- */
 const PB={panel:[110,92,780,424],go:[270,534,460,86],gc:[110,640,340,50],cl:[550,640,340,50]};
@@ -6899,7 +7038,7 @@ function drawGacha(){const G=U.g,now=performance.now(),dt=G.ph===1?Math.min(.05,
 const _d=draw,_ck=click;
 draw=function(){
  if(window.__SVS&&window.__SVS.on){if(window.__SVS.screen!=='game')bg();window.__SVS.draw();return}
- if(st==='menu'&&U.run&&!U.s){U.run=null;U.res=null;U.cur=null;U.s='play';toast('Đã bỏ trận')}
+ onWatch();if(st==='menu'&&U.run&&!U.s){U.run=null;U.res=null;U.cur=null;U.s='play';toast('Đã bỏ trận')}
  if(st==='menu'&&U.s){bg();({home:drawHome,play:drawPlay,pick:drawPick,wait:drawWait,aim:drawAim,coll:drawColl,gacha:drawGacha})[U.s]();
   if(U.tt>0){U.tt-=1/60;g.globalAlpha=Math.min(1,U.tt*2);tx(U.toast,W/2,H-24,20,'#FFD54A',1);g.globalAlpha=1}return}
  _d();
@@ -6933,7 +7072,7 @@ click=function(x,y){
   return _c2(x,y)}})();
 
 function uiClick(x,y){
- if(U.s==='home'){if(inR(x,y,HB[0])){U.s=null;return}if(inR(x,y,HB[1])){ON.open();return}if(inR(x,y,HB[2])){U.s='play';return}if(inR(x,y,HB[3])){window.__svOpen();return}
+ if(U.s==='home'){if(inR(x,y,HB[0])){if(mlock('all'))return;U.s=null;return}if(inR(x,y,HB[1])){if(mlock('online'))return;ON.open();return}if(inR(x,y,HB[2])){if(mlock('bot'))return;U.s='play';return}if(inR(x,y,HB[3])){if(mlock('surv'))return;window.__svOpen();return}
   return}
  if(U.s==='play'){if(inR(x,y,BACK)){U.s='home';return}if(inR(x,y,PB.go)){startRun();return}if(inR(x,y,PB.cl)){U.fh=0;U.page=0;U.s='coll';return}
   if(inR(x,y,PB.gc)){U.fh=0;U.g={t:0,id:0,ph:0};U.s='gacha'}return}
@@ -10820,5 +10959,110 @@ window.__svOpen=()=>{SVS.on=1;SVS.screen='menu';S=null;B=[];st='menu'};
 window.__sv={open:window.__svOpen,start:(c,m)=>{SVS.on=1;sel.c=c;sel.m=m;newGame(c,m)},wave:()=>startWave(),st:()=>S,UPS,hide,give:n=>{S.sh+=n},scr:s=>{SVS.screen=s}};
 
 })();
+</script>
+<script>
+/* ===== UPDATE 67: bảng BẠN BÈ cố định bên phải (online) + QUAY VIDEO cho admin ===== */
+(()=>{'use strict';
+const $=id=>document.getElementById(id),css=document.createElement('style');
+css.textContent=`
+#frs{position:fixed;right:8px;top:64px;width:min(262px,42vw);max-height:calc(100% - 140px);overflow:auto;z-index:25;background:#fff;border:4px solid #000;box-shadow:6px 6px 0 rgba(0,0,0,.35);font:700 13px/1.25 "Trebuchet MS",Arial,sans-serif;color:#000;display:none}
+#frs h3{margin:0;padding:8px 10px;background:#000;color:#fff;font-size:16px;display:flex;justify-content:space-between;align-items:center}
+#frs h3 button{min-height:0;padding:2px 9px;font-size:16px}
+#frs button{border:3px solid #000;background:#fff;color:#000;font:800 12px/1 inherit;min-height:34px;padding:0 8px;cursor:pointer}
+#frs button:hover{background:#FFD54A}#frs button.pri{background:#000;color:#fff}#frs button.pri:hover{background:#333}
+#frs .gr{display:grid;grid-template-columns:1fr 1fr;gap:6px;padding:8px}
+#frs .sec{padding:6px 8px;border-top:3px solid #000}#frs .sec b{display:block;font-size:11px;letter-spacing:1px;margin-bottom:4px;color:#555}
+#frs .in{display:flex;gap:5px}#frs input{flex:1;min-width:0;border:3px solid #000;padding:0 6px;min-height:32px;font:800 13px inherit;text-transform:uppercase}
+#frs .fr{display:flex;align-items:center;gap:6px;padding:4px 0}#frs .fr span.n{flex:1;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+#frs .av{width:26px;height:26px;border:2px solid #000;border-radius:50%;display:flex;align-items:center;justify-content:center;color:#fff;font-size:13px}
+#frs .dot{width:10px;height:10px;border-radius:50%;border:2px solid #000;flex:none}
+#frs .code{font:900 24px/1 inherit;letter-spacing:4px;text-align:center;padding:6px;background:#FFF8E1;border:3px dashed #000;margin-bottom:5px}
+#frs .ms{padding:5px 8px;font-size:12px;color:#B71C1C;min-height:16px}#frs .ms.ok{color:#2E7D32}#frs .nt{font-size:11px;color:#555;font-weight:600}
+#frsT{position:fixed;right:8px;top:64px;z-index:25;display:none;border:4px solid #000;background:#fff;font:900 14px "Trebuchet MS",Arial;padding:8px 12px;cursor:pointer}
+#recBar{position:fixed;left:8px;top:8px;z-index:60;display:none;gap:6px;align-items:center;flex-wrap:wrap;max-width:94vw;font:800 13px "Trebuchet MS",Arial,sans-serif}
+#recBar>*{border:3px solid #000;background:#fff;color:#000;padding:7px 11px;font:inherit;min-height:0}#recBar button{cursor:pointer}#recBar .rd{background:#C62828;color:#fff}
+#dock #dkRec{min-height:48px}`;
+document.head.append(css);
+/* ---------- bảng bạn bè ---------- */
+const box=document.createElement('div');box.id='frs';const tab=document.createElement('button');tab.id='frsT';tab.textContent='‹ BẠN BÈ';document.body.append(box,tab);
+let hid=false,msg=['',0],codeIn='',addIn='';
+const el=(t,x,c,f)=>{const e=document.createElement(t);if(x!=null)e.textContent=x;if(c)e.className=c;if(f)e.onclick=f;return e};
+const colOf=n=>{let h=0;for(const ch of String(n))h=(h*31+ch.charCodeAt(0))%360;return 'hsl('+h+',55%,40%)'};
+const say=(t,ok)=>{msg=[t,ok];draw()};
+function draw(){const ON=window.__ON;if(!ON||!ON.user){box.textContent='';return}const P=ON.P,u=ON.user;box.textContent='';
+ const h=el('h3','BẠN BÈ • '+Object.keys(P.friends).filter(k=>P.online[k]).length+' online');h.append(el('button','»',0,()=>{hid=true;sync()}));box.append(h);
+ const gr=el('div',null,'gr');gr.append(el('button','TẠO PHÒNG',0,async()=>{try{await ON.makeRoom();say('Đã tạo phòng, gửi mã cho bạn',1)}catch(e){say('Không tạo được phòng')}}),el('button','XẾP HẠNG 5v5','pri',()=>{if(ON.mm.s==='idle')ON.startRank()}));
+ gr.append(el('button','GHÉP 1v1','pri',()=>{if(ON.mm.s==='idle')ON.start()}),el('button','HÒM THƯ',0,()=>{const b=$('dkM');if(b)b.click()}));box.append(gr);
+ const s1=el('div',null,'sec');s1.append(el('b','PHÒNG'));
+ if(ON.hostCode){s1.append(el('div',ON.hostCode,'code'));const r=el('div',null,'in');r.append(el('button','SAO CHÉP',0,()=>{try{navigator.clipboard.writeText(ON.hostCode);say('Đã sao chép mã',1)}catch(e){say('Hãy chép tay: '+ON.hostCode)}}),el('span','Đang chờ bạn vào…','nt'));s1.append(r)}
+ const jr=el('div',null,'in');const ji=el('input');ji.placeholder='Nhập mã phòng';ji.maxLength=8;ji.value=codeIn;ji.oninput=()=>codeIn=ji.value;jr.append(ji,el('button','VÀO',0,async()=>{if(!codeIn.trim())return say('Nhập mã phòng');try{const r=await ON.joinRoom(codeIn);if(r!=='ok')say(r)}catch(e){say('Không vào được phòng')}}));s1.append(jr);box.append(s1);
+ const rq=Object.keys(P.reqs),iv=Object.keys(P.invs);
+ if(iv.length||rq.length){const s=el('div',null,'sec');s.append(el('b','THÔNG BÁO'));for(const k of iv){const d=el('div',null,'fr');d.append(el('span','⚔ '+P.invs[k].name+' mời đấu','n'),el('button','VÀO','pri',()=>ON.acceptInv(k,P.invs[k].name)));s.append(d)}
+  for(const k of rq){const d=el('div',null,'fr');d.append(el('span','＋ '+P.reqs[k].name,'n'),el('button','NHẬN','pri',()=>ON.accept(k,P.reqs[k].name,1)),el('button','BỎ',0,()=>ON.accept(k,P.reqs[k].name,0)));s.append(d)}box.append(s)}
+ const s2=el('div',null,'sec');s2.append(el('b','DANH SÁCH BẠN'));const ks=Object.keys(P.friends).sort((a,b)=>(P.online[b]?1:0)-(P.online[a]?1:0));
+ if(!ks.length)s2.append(el('div','Chưa có bạn. Nhập ID người dùng bên dưới để kết bạn.','nt'));
+ for(const k of ks){const f=P.friends[k],on=!!P.online[k],d=el('div',null,'fr'),av=el('div',String(f.name).charAt(0).toUpperCase(),'av');av.style.background=colOf(f.name);const dot=el('div',null,'dot');dot.style.background=on?'#43A047':'#BDBDBD';d.append(av,dot,el('span',f.name,'n'));if(on)d.append(el('button','MỜI 1v1','pri',()=>ON.invite(k).catch(()=>say('Không gửi được lời mời'))));else d.append(el('span','offline','nt'));s2.append(d)}
+ const ar=el('div',null,'in');ar.style.marginTop='6px';const ai=el('input');ai.placeholder='ID bạn muốn kết bạn';ai.maxLength=8;ai.value=addIn;ai.oninput=()=>addIn=ai.value;ar.append(ai,el('button','KẾT BẠN',0,async()=>{if(!addIn.trim())return;const r=await ON.addByCode(addIn).catch(()=>'Lỗi mạng');say(r==='ok'?'Đã gửi lời mời kết bạn':r,r==='ok');if(r==='ok'){addIn=''}}));s2.append(ar);box.append(s2);
+ const m=el('div',msg[0],'ms'+(msg[1]?' ok':''));box.append(m,el('div','5v5: ghép 10 người qua XẾP HẠNG. Mời bạn cùng đội 5v5 chưa có vì rule database chưa có chỗ lưu đội.','nt sec'))}
+function sync(){const U=window.__U,ON=window.__ON;const show=!!(U&&ON&&ON.user&&U.s==='mm'&&st==='menu'&&!U.run&&!$('ac').classList.contains('on')&&!(window.__SVS&&window.__SVS.on));
+ box.style.display=show&&!hid?'block':'none';tab.style.display=show&&hid?'block':'none'}
+tab.onclick=()=>{hid=false;sync();draw()};
+function hook(){const ON=window.__ON;if(!ON||ON.__frs)return;ON.__frs=1;const p0=ON.panel;ON.panel=function(){const r=p0.apply(this,arguments);try{draw()}catch(e){}return r}}
+setInterval(()=>{hook();const was=box.style.display;sync();if(was!=='block'&&box.style.display==='block')draw()},250);
+/* ---------- QUAY VIDEO (chỉ admin): quay riêng khung sàn đấu ---------- */
+const dock=$('dock'),rb=document.createElement('button');rb.id='dkRec';rb.hidden=true;dock.append(rb);
+const bar=document.createElement('div');bar.id='recBar';document.body.append(bar);
+let armed=false,rec=null,clips=[],ovT=0,tick=0;
+const isAdm=()=>!$('dkA').hidden;
+const paint=()=>{rb.textContent=armed?'● QUAY VIDEO: BẬT':'○ QUAY VIDEO: TẮT';rb.style.background=armed?'#C62828':'#fff';rb.style.color=armed?'#fff':'#000'};
+rb.onclick=()=>{armed=!armed;paint();bar.dataset.k=''};paint();
+function startRec(){const OUT=720,oc=document.createElement('canvas');oc.width=oc.height=OUT;const x=oc.getContext('2d');let mt='';for(const m of['video/webm;codecs=vp9','video/webm;codecs=vp8','video/webm','video/mp4'])if(window.MediaRecorder&&MediaRecorder.isTypeSupported(m)){mt=m;break}
+ if(!mt){armed=false;paint();bar.style.display='flex';bar.textContent='Trình duyệt không hỗ trợ quay video';return}
+ const stream=oc.captureStream(60),mr=new MediaRecorder(stream,{mimeType:mt,videoBitsPerSecond:6e6}),ch=[];mr.ondataavailable=e=>{if(e.data&&e.data.size)ch.push(e.data)};
+ mr.onstop=()=>{const b=new Blob(ch,{type:mt.split(';')[0]});if(b.size>2000){const ext=mt.includes('mp4')?'mp4':'webm';clips.unshift({url:URL.createObjectURL(b),name:'ballvsball_'+new Date().toISOString().replace(/[:.]/g,'-').slice(0,19)+'.'+ext,mb:(b.size/1048576).toFixed(1),sec:Math.round((performance.now()-r.t0)/1000)});if(clips.length>6)URL.revokeObjectURL(clips.pop().url)}rec=null;paintBar()};
+ const r={mr,oc,x,t0:performance.now(),OUT};rec=r;mr.start(250);const loop=()=>{if(rec!==r)return;const s=AS*sc;x.drawImage(cv,ox+AX*sc,oy+AY*sc,s,s,0,0,OUT,OUT);requestAnimationFrame(loop)};loop();paintBar()}
+function stopRec(){if(rec&&rec.mr.state!=='inactive')rec.mr.stop()}
+function paintBar(){bar.textContent='';if(!isAdm()){bar.style.display='none';return}
+ if(rec){bar.style.display='flex';const d=document.createElement('div');d.className='rd';d.textContent='● ĐANG QUAY '+Math.round((performance.now()-rec.t0)/1000)+'s';bar.append(d);return}
+ if(!clips.length||st!=='menu'){bar.style.display='none';return}
+ bar.style.display='flex';const c=clips[0];const a=document.createElement('button');a.textContent='⬇ TẢI VỀ ('+c.sec+'s • '+c.mb+'MB)';a.onclick=()=>{const l=document.createElement('a');l.href=c.url;l.download=c.name;document.body.append(l);l.click();l.remove()};bar.append(a);
+ if(clips.length>1){const o=document.createElement('button');o.textContent='Clip cũ ▾';o.onclick=()=>{for(let i=1;i<clips.length;i++){const k=clips[i],l=document.createElement('a');l.href=k.url;l.download=k.name;document.body.append(l);l.click();l.remove()}};bar.append(o)}
+ const x=document.createElement('button');x.textContent='XÓA';x.onclick=()=>{clips.forEach(k=>URL.revokeObjectURL(k.url));clips=[];paintBar()};bar.append(x)}
+setInterval(()=>{const adm=isAdm();rb.hidden=!adm;if(!adm&&armed){armed=false;paint()}
+ const sv=window.__SVS&&window.__SVS.on;
+ if(armed&&!rec&&(st==='count'||st==='fight')&&!sv&&adm)startRec();
+ if(rec){if(st==='over'){if(!ovT)ovT=performance.now();if(performance.now()-ovT>1800){ovT=0;stopRec()}}else{ovT=0;if(st==='menu')stopRec()}}
+ if(++tick%5===0)paintBar()},100);
+window.__rec={arm:v=>{armed=v;paint()},clips:()=>clips,state:()=>rec?rec.mr.state:'none'};
+})();
+</script>
+<script>
+/* ===== UPDATE 68: giữ đăng nhập khi F5 + làm đẹp nút BẠN BÈ / HÒM THƯ ===== */
+(()=>{'use strict';
+const ON=window.__ON,K='bvb_sess',G='bvb_guest',ls=(f)=>{try{return f()}catch(e){return null}};
+const st=document.createElement('style');
+st.textContent=`
+#dock{left:10px;top:calc(76px + env(safe-area-inset-top,0px));bottom:auto;flex-direction:column;flex-wrap:nowrap;gap:10px;align-items:stretch}
+#dock button{display:flex;align-items:center;gap:8px;min-height:46px;padding:0 10px 0 8px;white-space:nowrap;border:4px solid #000;border-radius:12px;background:#fff;box-shadow:4px 4px 0 #000;font:900 13px/1 "Trebuchet MS",Arial,sans-serif;letter-spacing:.5px;transition:transform .08s,box-shadow .08s,background .12s}
+#dock button:hover{background:#FFD54A}#dock button:active{transform:translate(3px,3px);box-shadow:1px 1px 0 #000}
+#dock button[hidden]{display:none}#dock{max-width:166px}#dock button svg{width:22px;height:22px;flex:none}#dkF{background:#E3F2FD}#dkM{background:#FFF8E1}
+#frs{top:calc(14px + env(safe-area-inset-top,0px));right:12px;max-height:calc(100% - 32px);border-radius:14px;overflow:auto;box-shadow:5px 5px 0 #000}
+#frs h3{background:#1E88E5;border-bottom:4px solid #000;font-size:15px;letter-spacing:.5px}
+#frs .gr button{border-radius:10px;box-shadow:2px 2px 0 #000}
+#frsT{top:calc(14px + env(safe-area-inset-top,0px));right:12px;border-radius:12px;box-shadow:4px 4px 0 #000}
+@media (max-width:700px){#dock{flex-direction:row;align-items:flex-start;align-content:flex-start;height:auto;bottom:auto;top:calc(8px + env(safe-area-inset-top,0px));left:8px;max-width:calc(100vw - 16px);flex-wrap:wrap}#dock button{min-height:40px;font-size:12px}#frs,#frsT{display:none!important}}
+@media (prefers-reduced-motion:reduce){#dock button{transition:none}}`;
+document.head.append(st);
+const IC={dkF:'<svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="9" cy="8" r="3.5" fill="#1E88E5" stroke="#000" stroke-width="2"/><circle cx="17" cy="9" r="2.8" fill="#90CAF9" stroke="#000" stroke-width="2"/><path d="M2.5 20c0-4 3-6 6.5-6s6.5 2 6.5 6z" fill="#1E88E5" stroke="#000" stroke-width="2" stroke-linejoin="round"/></svg>',
+ dkM:'<svg viewBox="0 0 24 24" aria-hidden="true"><rect x="2.5" y="5" width="19" height="14" rx="2" fill="#FFD54A" stroke="#000" stroke-width="2"/><path d="M3 6.5l9 7 9-7" fill="none" stroke="#000" stroke-width="2" stroke-linejoin="round"/></svg>'};
+for(const id in IC){const b=document.getElementById(id);if(b&&!b.querySelector('svg'))b.insertAdjacentHTML('afterbegin',IC[id])}
+/* ---- giữ phiên đăng nhập ---- */
+const mark=v=>ls(()=>v?localStorage.setItem(K,v):localStorage.removeItem(K));
+const lo=ON.logout;ON.logout=function(){mark('');ls(()=>localStorage.removeItem(G));return lo.apply(this,arguments)};
+const al=ON.afterLogin;ON.afterLogin=function(){const u=ON.user;if(u){if(ON.F){mark('fb');ls(()=>localStorage.removeItem(G))}else if(u.kind==='guest')ls(()=>localStorage.setItem(G,JSON.stringify(u)))}return al&&al.apply(this,arguments)};
+async function restore(){if(ON.user)return;
+ if(ls(()=>localStorage.getItem(K))){try{const F=await ON.fb();await new Promise(res=>{const un=F.au.onAuthStateChanged(F.auth,async u=>{un();if(u&&!ON.user&&(u.emailVerified||u.isAnonymous)){ON.user={uid:u.uid,name:u.displayName||'Người chơi',kind:u.isAnonymous?'guest':'acc'};try{await ON.afterLogin()}catch(e){}}else if(!u)mark('');res()})})}catch(e){}return}
+ const g=ls(()=>JSON.parse(localStorage.getItem(G)||'null'));if(g&&g.uid&&g.name)ON.user=g}
+restore()})();
 </script>
 </body></html>
