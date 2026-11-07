@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html lang="vi"><head><meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
-<title>Ball vs Ball - Update 1</title>
+<title>Ball vs Ball - Update 69</title>
 <link rel="icon" type="image/png" href="https://i.ibb.co/zWqTqnyv/image.png"><link rel="apple-touch-icon" href="https://i.ibb.co/zWqTqnyv/image.png">
 <style>
 :root{--bg:#4A90E2;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
@@ -6878,6 +6878,21 @@ ADMX.btns.push(['hammer','BÚA 30 DAME']);
   if(ON.live()&&ON.F&&ON.opp&&ON.room){try{ON.F.db.set(ON.F.db.ref(ON.F.rdb,'rooms/'+ON.room+'/fx/'+ON.opp.uid),{t:'adm',k:'hammer',r:r,ts:ADMX.nts()})}catch(e){console.error(e)}}return}
   return f.call(ADMX,k)}}
 {const f=ADMX.recv;ADMX.recv=function(k,r){if(k==='hammer'){ADMX.act.hammer(1,r);return}return f.call(ADMX,k)}}
+Object.assign(ADMX.act,{spawn(s,r){const me=ADMX.side(s)[0];if(me&&window.__summonAll)window.__summonAll(me,r||((Math.random()*999|0)+1))}});
+ADMX.btns.push(['spawn','SPAWN TẤT CẢ']);
+{const f=ADMX.run;ADMX.run=function(k){if(k==='spawn'){const r=(Math.random()*999|0)+1;ADMX.act.spawn(0,r);
+  if(ON.live()&&ON.F&&ON.opp&&ON.room){try{ON.F.db.set(ON.F.db.ref(ON.F.rdb,'rooms/'+ON.room+'/fx/'+ON.opp.uid),{t:'adm',k:'spawn',r:r,ts:ADMX.nts()})}catch(e){console.error(e)}}return}
+  return f.call(ADMX,k)}}
+{const f=ADMX.recv;ADMX.recv=function(k,r){if(k==='spawn'){ADMX.act.spawn(1,r);return}return f.call(ADMX,k)}}
+/* thanh admin nằm NGOÀI vùng chơi: dùng lề trái/phải (hoặc trên/dưới) của khung game, không đè lên màn chơi */
+function dock(){const a=document.getElementById('adx');if(!a||getComputedStyle(a).display==='none')return;
+ try{const r=cv.getBoundingClientRect(),k=(cv.width/r.width)||1,gl=r.left+ox/k,gt=r.top+oy/k,gr=gl+W*sc/k,gb=gt+H*sc/k,mL=gl,mR=innerWidth-gr,mT=gt,mB=innerHeight-gb,S=a.style;
+  const put=o=>{for(const x in o)S[x]=o[x]};put({position:'fixed',boxSizing:'border-box',right:'auto',left:'auto',top:'auto',bottom:'auto',transform:'none'});
+  if(Math.max(mL,mR)>=126){const L=mL>=mR;put({flexDirection:'column',flexWrap:'nowrap',width:Math.min(150,(L?mL:mR)-10)+'px',maxWidth:'150px',maxHeight:'calc(100vh - 16px)',top:'50%',transform:'translateY(-50%)',[L?'left':'right']:'5px'})}
+  else if(Math.max(mT,mB)>=60){const D=mB>=mT;put({flexDirection:'row',flexWrap:'wrap',width:'auto',maxWidth:'98vw',maxHeight:'none',left:'50%',transform:'translateX(-50%)',[D?'bottom':'top']:'3px'})}
+  else put({flexDirection:'row',flexWrap:'wrap',width:'auto',maxWidth:'98vw',maxHeight:'28vh',left:'50%',transform:'translateX(-50%)',bottom:'3px'})}catch(e){}}
+ADMX.dock=dock;setInterval(dock,500);addEventListener('resize',dock);
+
 window.__ADM=ADM;window.__ADMHOOK={sv:()=>SV,save:()=>save()};/* ===== UPDATE 82: ADMIN • BAN TROLL • MAP x10 • BIẾN HÌNH • KHÔNG HỒI CHIÊU ===== */
 Object.assign(ADM,{
  troll(){if(ADM._tr)return;ADM._tr=1;try{st='menu';U.s='home'}catch(e){}
@@ -11852,9 +11867,10 @@ const cl=(x,a,b)=>Math.min(b,Math.max(a,x));
 const AD=N.length+1,BAD=new Set(window.__BADSUM||[]);window.__ADID=AD;
 N[AD-1]='ADMIN';CL[AD-1]='#FFD700';INF[AD-1]="Bóng riêng của quản trị viên, chỉ tài khoản admin mới có. Mỗi 20 giây triệu hồi TẤT CẢ các bóng trong game cùng một lúc về phe mình (mỗi con nhỏ hơn và 35% máu). Admin bật KO HỒI CHIÊU thì triệu hồi liên tục.";window.__TG[AD]='admin quan tri vien trieu hoi tat ca bong';
 REM46.add(AD);
-function summonAll(b){const ids=[];for(let i=1;i<=N.length;i++)if(i!==AD&&!BAD.has(i)&&!REM46.has(i))ids.push(i);const n=ids.length;
- ids.forEach((id,i)=>{if(B.length>=220)return;const m=mk(id,b.side),a=i/n*TAU,rad=90+(i%4)*38;m.r=R*.42;m.hp=m.max=Math.max(25,HP*.35);
-  m.x=cl(b.x+Math.cos(a)*rad,AX+LO+m.r,AX+AS-LO-m.r);m.y=cl(b.y+Math.sin(a)*rad,AY+LO+m.r,AY+AS-LO-m.r);const d=rnd()*TAU;m.vx=Math.cos(d);m.vy=Math.sin(d);m._sum=1;B.push(m)});
+const mul=q=>()=>{q=(q+0x6D2B79F5)|0;let t=Math.imul(q^(q>>>15),1|q);t=(t+Math.imul(t^(t>>>7),61|t))^t;return((t^(t>>>14))>>>0)/4294967296};
+function summonAll(b,seed){const M=window.__MEGA;if(M){M.set(true);M.z=Math.min(M.z,.3)}const rn=seed?mul(seed*7919+13):rnd,ids=[];for(let i=1;i<=N.length;i++)if(i!==AD&&!BAD.has(i)&&!REM46.has(i))ids.push(i);const n=ids.length;
+ ids.forEach((id,i)=>{if(B.length>=220)return;const m=mk(id,b.side),a=rn()*TAU,rad=150+rn()*1300;m.r=R*.42;m.hp=m.max=Math.max(25,HP*.35);
+  m.x=cl(b.x+Math.cos(a)*rad,AX+LO+m.r,AX+AS-LO-m.r);m.y=cl(b.y+Math.sin(a)*rad,AY+LO+m.r,AY+AS-LO-m.r);const d=rn()*TAU;m.vx=Math.cos(d);m.vy=Math.sin(d);m._sum=1;B.push(m)});
  try{ring(b.x,b.y,220,'#FFD700',.7);ft(b.x,b.y-b.r-50,'TRIỆU HỒI TẤT CẢ!','#FFD700',26);shk(10);sfx('boom',1)}catch(e){}}
 S[AD]={t:(b,o,dt)=>{const X=b._ad||(b._ad={t:0});X.t+=dt;if(b.cd<=0&&X.t>=.8&&B.length<220){X.t=0;b.cd=20;summonAll(b)}}};
 window.__summonAll=summonAll;
