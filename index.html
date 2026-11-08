@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html lang="vi"><head><meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
-<title>Ball vs Ball - Update 1</title>
+<title>Ball vs Ball - Update 86</title>
 <link rel="icon" type="image/png" href="https://i.ibb.co/zWqTqnyv/image.png"><link rel="apple-touch-icon" href="https://i.ibb.co/zWqTqnyv/image.png">
 <style>
 :root{--bg:#4A90E2;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
@@ -6740,6 +6740,50 @@ $a('adBG').onclick=()=>ADM.run(()=>ADM.grant({t:'ball',id:+$a('adB').value}));$a
 $a('adAA').onclick=()=>ADM.run(()=>ADM.setAdmin(true));$a('adAR').onclick=()=>ADM.run(()=>ADM.setAdmin(false));$a('adDel').onclick=()=>ADM.run(()=>ADM.del());
 {const _al=ON.afterLogin;ON.afterLogin=async function(){const F=ON.F,u=ON.user;try{if(F&&(await F.db.get(F.db.ref(F.rdb,'banned/'+u.uid))).val()){toast('Tài khoản này đã bị xóa');return ON.logout()}}catch(e){}await _al.call(ON);if(u.kind==='acc'&&F.auth.currentUser){try{const r=F.db.ref(F.rdb,'usernames/'+ukey(u.name));if(!(await F.db.get(r)).val())await F.db.set(r,{uid:u.uid,email:F.auth.currentUser.email})}catch(e){}}await ADM.init()};
  const _lo=ON.logout;ON.logout=async function(){ADM.on=false;ADM.t=null;$a('acAd').hidden=true;$a('ad').classList.remove('on');return _lo.call(ON)}}
+
+/* ===== UPDATE 86: BỎ đồng bộ theo seed (BVB72) — chuyển sang 1 MÔ PHỎNG DUY NHẤT, bên kia chỉ xem gương ====
+   Chủ phòng (role 'a') chạy vật lý thật một mình như ALL BÓNG; máy khách (role 'b') KHÔNG tự chạy vật lý,
+   chỉ nhận trạng thái bóng + đạn mới nhất và vẽ y hệt — không còn cửa nào để lệch hướng/chiêu nữa. */
+window.BVBSYNC=(function(){
+ const HZ=45;
+ let curRoom=null,latest=null,lastSend=0,everSynced=false;
+ function num(v){return (typeof v==='number'&&isFinite(v))?v:0}
+ function clone(v,d){
+  if(v==null)return v;const t=typeof v;
+  if(t==='function')return undefined;
+  if(t==='number')return num(v);
+  if(t!=='object')return v;
+  if(d<=0)return undefined;
+  if(Array.isArray(v)){const o=[];for(let i=0;i<v.length&&i<60;i++){const c=clone(v[i],d-1);o.push(c===undefined?null:c)}return o}
+  const o={};for(const k in v){if(!Object.prototype.hasOwnProperty.call(v,k))continue;const c=clone(v[k],d-1);if(c!==undefined)o[k]=c}return o}
+ function path(rid){return 'rooms/'+rid+'/sim'}
+ function attach(rid){if(curRoom===rid)return;curRoom=rid;latest=null;everSynced=false;
+  try{ON.sub(path(rid),v=>{latest=v||null})}catch(e){}}
+ function hostTick(rid){const now=performance.now();if(now-lastSend<HZ)return;lastSend=now;
+  try{const payload={ts:now,st,win:(st==='over'?win:-1),b:clone(B,3),pr:clone(typeof PR!=='undefined'?PR:[],3)};
+   ON.F.db.set(ON.F.db.ref(ON.F.rdb,path(rid)),payload)}catch(e){}}
+ function sameShape(a,b){return Array.isArray(a)&&Array.isArray(b)&&a.length===b.length}
+ /* ghi THẲNG vào biến B/PR thật (let ở scope ngoài — không phải window.B/window.PR) qua 2 hàm set do nơi gọi đưa vào */
+ function guestTick(curB,curPR,setB,setPR){if(!latest)return false;
+  if(Array.isArray(latest.b)){
+   if(!sameShape(curB,latest.b))setB(latest.b.slice());
+   else for(let i=0;i<latest.b.length;i++)Object.assign(curB[i],latest.b[i])}
+  if(Array.isArray(latest.pr)){
+   if(!sameShape(curPR,latest.pr))setPR(latest.pr.slice());
+   else{curPR.length=0;for(const p of latest.pr)curPR.push(p)}}
+  everSynced=true;return{over:latest.st==='over',win:latest.win}}
+ return{attach,hostTick,guestTick,isGuestReady:()=>everSynced};
+})();
+{const f=upd;upd=function(dt){
+ if(st==='fight'&&ON.live()&&ON.room){
+  BVBSYNC.attach(ON.room);
+  if(ON.role==='a'){f(dt);BVBSYNC.hostTick(ON.room);return}
+  else{const r=BVBSYNC.guestTick(B,PR,v=>{B=v},v=>{PR=v});if(r&&r.over&&st!=='over'){win=r.win;st='over'}return}
+ }
+ f(dt)}}
+{const f=begin;begin=function(){if(ON.live()&&ON.room)BVBSYNC.attach(ON.room);f()}}
+window.__SYNC86={ON,BVBSYNC,upd,begin,getST:()=>st,setST:v=>{st=v},getWin:()=>win,setWin:v=>{win=v},getB:()=>B,setB:v=>{B=v},getPR:()=>PR,setPR:v=>{PR=v}};
+
 
 /* ===== UPDATE 1: đồng bộ kết quả, uy tín, hòm thư, khóa toàn server, công cụ admin ===== */
 window.__LK=window.__LK||new Set();
